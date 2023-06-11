@@ -2,7 +2,10 @@ import NextAuth from "next-auth";
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { authOptions } from "~/server/auth";
 
-const Auth = async (req: NextApiRequest, res: NextApiResponse): any => {
+const Auth = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+): Promise<any> => {
   console.log("In [...nextauth].ts");
 
   const authOps = authOptions({ req });
