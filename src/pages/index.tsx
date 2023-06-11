@@ -4,6 +4,10 @@ import Head from "next/head";
 import Link from "next/link";
 import { api } from "~/utils/api";
 
+import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { useAccount } from "wagmi";
+import { useEffect, useState } from "react";
+
 const Home: NextPage = () => {
   const hello = api.example.hello.useQuery({ text: "from tRPC" });
 
@@ -59,24 +63,32 @@ export default Home;
 
 const AuthShowcase: React.FC = () => {
   const { data: sessionData } = useSession();
+  const { address } = useAccount();
+
+  const [showConnection, setShowConnection] = useState(false);
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
+
+  useEffect(() => {
+    setShowConnection(true);
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center gap-4">
-      <p className="text-center text-2xl text-white">
-        {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
-        {secretMessage && <span> - {secretMessage}</span>}
-      </p>
-      <button
-        className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-        onClick={sessionData ? () => void signOut() : () => void signIn()}
-      >
-        {sessionData ? "Sign out" : "Sign in"}
-      </button>
+      {!!showConnection ? (
+        <>
+          <p className="text-center text-2xl text-white">
+            {sessionData && <span>Logged in as {sessionData.user?.name}</span>}
+            {secretMessage && <span> - {secretMessage}</span>}
+          </p>
+          {!!address && <p>Connected to: {address}</p>}
+          {/* Modal hangs after signing message to login */}
+          <ConnectButton />
+        </>
+      ) : null}
     </div>
   );
 };
